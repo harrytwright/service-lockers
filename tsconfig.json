@@ -1,0 +1,17 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "preserveConstEnums": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "stripInternal": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "outDir": "dist",
+  },
+  "include": ["src/**/*", "test/**/*.test.ts", "scripts/**/*.ts", ".lanelink/**/*.ts", "index.ts", "jest/**/*"],
+  "exclude": ["node_modules"]
+}

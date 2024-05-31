@@ -1,0 +1,122 @@
+{
+  "readinessCheck": [
+    {
+      "route": "/",
+      "method": "GET",
+      "test": {
+        "status": 200
+      }
+    },
+    {
+      "route": "/health",
+      "method": "GET",
+      "test": {
+        "status": 200
+      }
+    },
+    {
+      "route": "/health/readiness",
+      "method": "GET",
+      "test": {
+        "status": 200
+      }
+    }
+  ],
+  "generateNewMenu": [
+    {
+      "name": "Create Menu",
+      "route": "/menus",
+      "method": "POST",
+      "auth": true,
+      "body": {
+        "name": "Site X"
+      },
+      "tests": { "status": 201 },
+      "exports": {
+        "uuid": "body.data.id",
+        "mealtime": "body.data.mealtimes.0.id"
+      }
+    },
+    {
+      "name": "Update Menu",
+      "route": "/menus/${{ exports.uuid }}",
+      "method": "PATCH",
+      "auth": true,
+      "body": [
+        {
+          "op": "add",
+          "value": {
+            "name": "Pizzas",
+            "description": "Checkout our handmade pizzas"
+          },
+          "path": "/category/e37k4n2rp2vl5u75f1sy2xna"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/mealtime/${{exports.mealtime}}/categories/e37k4n2rp2vl5u75f1sy2xna"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/category/e37k4n2rp2vl5u75f1sy2xna/items/anhbiberkelkhygytha8pz2t"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/category/e37k4n2rp2vl5u75f1sy2xna/items/bs0kyhs9k3mo42p8h3q37452"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/item/anhbiberkelkhygytha8pz2t/modifiers/size"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/item/bs0kyhs9k3mo42p8h3q37452/modifiers/size"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/item/anhbiberkelkhygytha8pz2t/modifiers/crust"
+        },
+        {
+          "op": "add",
+          "value": {},
+          "path": "/item/bs0kyhs9k3mo42p8h3q37452/modifiers/crust"
+        }
+      ],
+      "tests": { "status": 202 },
+      "exports": {
+        "job": "body.data.jobId"
+      }
+    },
+    {
+      "name": "Wait for update to finish",
+      "route": "/menus/${{ exports.uuid }}/status/${{ exports.job }}?wait=true",
+      "method": "GET",
+      "auth": true,
+      "tests": {
+        "status": 200,
+        "body": {
+          "data": {
+            "state": "completed"
+          }
+        }
+      },
+      "exports": {
+        "job": "body.data.jobId"
+      }
+    },
+    {
+      "name": "Delete Menu",
+      "route": "/menus/${{ exports.uuid }}",
+      "method": "DELETE",
+      "auth": true,
+      "tests": {
+        "status": 204
+      }
+    }
+  ]
+}

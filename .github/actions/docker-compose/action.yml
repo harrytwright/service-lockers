@@ -1,0 +1,40 @@
+name: Run lanelink docker environment
+description: Run lanelink docker environment
+
+inputs:
+  token:
+    description: The GITHUB_TOKEN
+    required: true
+  staging:
+    description: Set if the action should start the current image too
+
+runs:
+  using: composite
+  steps:
+    - name: Sort compose files
+      if: ${{ inputs.staging == 'true' }}
+      shell: bash
+      run: |
+        echo "DOCKER_COMPOSE_FILES=-f ./.lanelink/docker-compose.yml -f ./.lanelink/docker-compose.dev.yml" >> $GITHUB_ENV
+    - name: Sort compose files
+      if: ${{ inputs.staging == 'false' }}
+      shell: bash
+      run: |
+        echo "DOCKER_COMPOSE_FILES=-f ./.lanelink/docker-compose.dev.yml" >> $GITHUB_ENV
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.token }}
+    - name: Create docker compose
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        docker compose ${{ env.DOCKER_COMPOSE_FILES }} up -d --quiet-pull --pull missing
+    - name: Check logs
+      if: ${{ always() }}
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        docker compose ${{ env.DOCKER_COMPOSE_FILES }} logs

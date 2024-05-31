@@ -1,0 +1,97 @@
+version: '3.1'
+
+services:
+  mysql:
+    image: mysql:latest
+    networks:
+      - sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./provision/mysql/init:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 20s
+      retries: 10
+  zipkin-storage:
+    image: ghcr.io/openzipkin/zipkin-mysql:${TAG:-latest}
+    networks:
+      - backend
+    ports:
+      - '4406:3306'
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - '9411:9411'
+    networks:
+      - backend
+    environment:
+      - STORAGE_TYPE=mysql
+      - MYSQL_HOST=zipkin-storage
+      # Add the baked-in username and password for the zipkin-mysql image
+      - MYSQL_USER=zipkin
+      - MYSQL_PASS=zipkin
+    depends_on:
+      zipkin-storage:
+        condition: service_healthy
+    command: --logging.level.zipkin2=DEBUG
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-mysql:7.0
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - '3567:3567'
+    networks:
+      - sql
+      - backend
+    environment:
+      - API_KEYS=${API_KEY}
+      - MYSQL_CONNECTION_URI=mysql://supertokens:password@mysql:3306/supertokens
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  auth:
+    image: ${AUTH_IMAGE:-ghcr.io/lanelink/auth}
+    platform: linux/amd64
+    depends_on:
+      supertokens:
+        condition: service_healthy
+    networks:
+      - backend
+      - events
+    restart: always
+    ports:
+      - '7879:3000'
+      - '15678:15678'
+    volumes:
+      - ./conf:/usr/src/app/conf
+    environment:
+      - SUPERTOKENS_CORE_URI=http://supertokens:3567
+      - SUPERTOKENS_CORE_API_KEY=${API_KEY}
+      - SUPERTOKENS_CORE_ADMIN_EMAIL=local@example.com
+      - SUPERTOKENS_CORE_ADMIN_PASSWORD=Local123
+      - ZIPKIN=http://zipkin:9411
+      - RABBIT_MQ=amqp://rabbitmq:5672
+      - API_KEY=${API_KEY}
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - events
+    restart: always
+
+networks:
+  backend:
+  sql:
+  events:
+  cache:

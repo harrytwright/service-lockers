@@ -1,0 +1,23 @@
+generator kysely {
+  provider    = "prisma-kysely"
+  output      = "../src/datastore"
+  fileName    = "kysely.database.types.ts"
+  readOnlyIds = true
+}
+
+// This is only used for seeding
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Please replace
+model Hello {
+  world String @default("World")
+
+  @@id([world])
+}

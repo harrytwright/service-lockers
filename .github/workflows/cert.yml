@@ -1,0 +1,32 @@
+---
+name: generate_load_cert
+
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        type: string
+        required: true
+      public:
+        type: boolean
+        default: false
+
+jobs:
+  generate:
+    name: Generate RSA KeyPair
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate output dir
+        run: mkdir ${{ github.workspace }}/certs
+      - name: Generate Private Key
+        run: openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -quiet -out ./certs/private.key
+      - name: Generate Public Key
+        if: inputs.public == true
+        run: openssl rsa -pubout -in ./certs/private.key -out ./certs/public.key
+      - name: Upload certs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact }}
+          path: ${{ github.workspace }}/certs
+          retention-days: 1

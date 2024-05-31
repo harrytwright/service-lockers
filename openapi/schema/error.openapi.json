@@ -1,0 +1,95 @@
+{
+  "components": {
+    "responses": {
+      "error": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "meta": {
+                  "properties": {
+                    "status": {
+                      "examples": [404],
+                      "type": ["number"]
+                    }
+                  },
+                  "type": ["object"]
+                },
+                "error": {
+                  "$ref": "#/components/schemas/api_error"
+                }
+              },
+              "type": ["object"]
+            }
+          }
+        },
+        "description": "Error response."
+      }
+    },
+    "schemas": {
+      "api_error": {
+        "description": "An error response from the API",
+        "properties": {
+          "code": {
+            "description": "The error code",
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "documentation": {
+            "description": "This is a URL link to the documentation of the error",
+            "type": ["string"]
+          },
+          "errors": {
+            "description": "These are any underlying errors that may have caused the error",
+            "items": {
+              "$ref": "#/components/schemas/api_error"
+            },
+            "type": ["array"]
+          },
+          "message": {
+            "description": "The error message",
+            "type": ["string"]
+          },
+          "meta": {
+            "additionalProperties": {},
+            "description": "This is any extra details that can help resolve an error",
+            "type": ["object"]
+          },
+          "name": {
+            "description": "The error name, usually this is just the error status name",
+            "type": ["string"]
+          },
+          "stack": {
+            "description": "The errors stack, only passed when in dev mode",
+            "type": ["string"]
+          }
+        },
+        "required": [
+          "message",
+          "name"
+        ],
+        "examples": [
+          {
+            "message": "Unable to find `item`",
+            "name": "NotFound"
+          },
+          {
+            "message": "Unable to move option from x to z due to error",
+            "name": "InternalServiceError",
+            "code": "ERR7871",
+            "errors": [
+              {
+                "message": "Stack overflow",
+                "name": "DBError"
+              }
+            ],
+            "documentation": "https://docs.lanelink.co.uk/options/move#err7871"
+          }
+        ],
+        "type": ["object"]
+      }
+    }
+  }
+}

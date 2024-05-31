@@ -1,0 +1,22 @@
+name: Send Discord notification if workflow fails
+description: Send Discord notification if workflow fails
+
+inputs:
+  webhook:
+    description: Discord Webhook URL
+    required: true
+  bot_name:
+    description: The discord bot name
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Send Slack notification if workflow fails
+      uses: sarisia/actions-status-discord@v1
+      with:
+        webhook: ${{ inputs.webhook }}
+        username: ${{ inputs.bot_name }}
+        color: 0xFF0000
+        content: The last '${{ github.workflow }}' run failed. See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

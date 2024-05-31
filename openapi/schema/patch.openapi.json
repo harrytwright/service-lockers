@@ -1,0 +1,92 @@
+{
+  "components": {
+    "requestBodies": {
+      "patch": {
+        "description": "The JSON Patch to update the item",
+        "content": {
+          "application/json-patch+json": {
+            "schema": {
+              "$ref": "#/components/schemas/patch_body"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "patch": {
+        "description": "A JSONPatch document as defined by RFC 6902",
+        "properties": {
+          "from": {
+            "description": "A string containing a JSON Pointer value.",
+            "type": [
+              "string"
+            ]
+          },
+          "op": {
+            "description": "The operation to be performed",
+            "enum": [
+              "add",
+              "copy",
+              "move",
+              "remove",
+              "replace",
+              "test"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "path": {
+            "description": "A JSON-Pointer",
+            "type": [
+              "string"
+            ]
+          },
+          "value": {
+            "description": "The value to be used within the operations.",
+            "anyOf": [
+              {
+                "type": ["string"]
+              },
+              {
+                "type": ["number"]
+              },
+              {
+                "type": ["integer"]
+              },
+              {
+                "type": ["boolean"]
+              },
+              {
+                "type": ["array"],
+                "items": {}
+              },
+              {
+                "type": ["object"],
+                "additionalProperties": true
+              }
+            ]
+          }
+        },
+        "required": [
+          "op",
+          "path"
+        ],
+        "type": [
+          "object"
+        ],
+        "$ts_ignore": true
+      },
+      "patch_body": {
+        "description": "An array of patches to be patched",
+        "items": {
+          "$ref": "#/components/schemas/patch"
+        },
+        "type": [
+          "array"
+        ],
+        "$ts_ignore": true
+      }
+    }
+  }
+}

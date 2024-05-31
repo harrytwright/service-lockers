@@ -1,0 +1,228 @@
+{
+  "openapi": "3.1.0",
+  "servers": [
+    {
+      "url": "https://api.{customerId}.lanelink.co.uk",
+      "variables": {
+        "customerId": {
+          "default": "demo",
+          "description": "The customer CUID assigned by us"
+        }
+      }
+    },
+    {
+      "url": "https://api.staging.lanelink.co.uk/items/{build}",
+      "variables": {
+        "build": {
+          "default": "e9d2cbb830deabbe16c5c77a128baa636794416e",
+          "description": "The current git hash for the build"
+        }
+      }
+    }
+  ],
+  "info": {
+    "title": "@lane-link/template",
+    "summary": "Template, please update",
+    "version": "0.0.1",
+    "termsOfService": "https://www.lanelink.co.uk/terms",
+    "contact": {
+      "name": "API Support",
+      "url": "https://support.lanelink.co.uk",
+      "email": "support@lanelink.co.uk"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "paths": {
+    "/": {
+      "description": "The base of the service",
+      "get": {
+        "description": "Get the server information",
+        "operationId": "getServerInfo",
+        "tags": [
+          "Internal"
+        ],
+        "responses": {
+          "200": {
+            "description": "The current server info, this is only to be used by our orchestrating software",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/server_info"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "type": [
+                    "object"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/health": {
+      "description": "The base of the service",
+      "get": {
+        "description": "Get the server health",
+        "operationId": "getHealth",
+        "tags": [
+          "Internal"
+        ],
+        "responses": {
+          "200": {
+            "description": "The current server info, this is only to be used by our orchestrating software",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/healthcheck"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/readiness": {
+      "description": "The base of the service",
+      "get": {
+        "description": "Get the server health",
+        "operationId": "getReadiness",
+        "tags": [
+          "Internal"
+        ],
+        "responses": {
+          "200": {
+            "description": "The current server info, this is only to be used by our orchestrating software",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "examples": [
+                    "true"
+                  ],
+                  "type": [
+                    "string"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Internal",
+      "description": "Internal API head points"
+    }
+  ],
+  "components": {
+    "responses": {
+      "error": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "meta": {
+                  "properties": {
+                    "status": {
+                      "examples": [404],
+                      "type": ["number"]
+                    }
+                  },
+                  "type": ["object"]
+                },
+                "error": {
+                  "$ref": "./schema/error.openapi.json#/components/schemas/api_error"
+                }
+              },
+              "type": ["object"]
+            }
+          }
+        },
+        "description": "Error response."
+      }
+    },
+    "schemas": {
+      "healthcheck": {
+        "properties": {
+          "details": {
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.*$": {
+                "type": "string"
+              }
+            },
+            "type": [
+              "object"
+            ]
+          },
+          "error": {
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.*$": {
+                "type": "string"
+              }
+            },
+            "type": [
+              "object"
+            ]
+          },
+          "info": {
+            "additionalProperties": false,
+            "patternProperties": {
+              "^.*$": {
+                "type": "string"
+              }
+            },
+            "type": [
+              "object"
+            ]
+          },
+          "status": {
+            "enum": [
+              "healthy",
+              "unhealthy"
+            ],
+            "type": [
+              "string"
+            ]
+          }
+        },
+        "type": [
+          "object"
+        ]
+      },
+      "server_info": {
+        "properties": {
+          "version": {
+            "examples": [
+              "1.8.2-beta.1"
+            ],
+            "type": [
+              "string"
+            ]
+          }
+        },
+        "type": [
+          "object"
+        ]
+      }
+    }
+  },
+  "security": []
+}

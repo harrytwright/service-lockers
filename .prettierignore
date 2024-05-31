@@ -1,0 +1,21 @@
+# Ignore artifacts:
+build
+coverage
+
+# Folders
+.git*
+jest
+openapi
+schema
+prisma
+jest.config.js
+
+# Ignore all HTML files:
+**/*.html
+
+#JSON/YAML
+**/*.json
+**/*.yaml
+
+# MD
+**/*.md

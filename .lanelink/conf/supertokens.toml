@@ -1,0 +1,13 @@
+app = "lanelink"
+
+[website]
+domain = "http://localhost:3000"
+
+[api]
+domain = "http://localhost:3000"
+base = "/auth"
+
+[recipes]
+
+# Set it for initalisation
+[recipes.jwt]
