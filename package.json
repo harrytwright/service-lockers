@@ -58,7 +58,7 @@
     "@types/lodash.omit": "^4.5.8",
     "@types/node": "^20.11.5",
     "@types/supertest": "^2.0.16",
-    "@types/uuid": "^9.0.6",
+    "@types/uuid": "^10.0.0",
     "@types/zipkin-context-cls": "^0.11.6",
     "cross-env": "^7.0.3",
     "ini": "^4.1.1",
