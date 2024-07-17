@@ -67,7 +67,7 @@
     "lodash.get": "^4.4.2",
     "lodash.omit": "^4.5.0",
     "minimist": "^1.2.8",
-    "path-to-regexp": "^6.2.1",
+    "path-to-regexp": "^7.1.0",
     "prettier": "^3.2.4",
     "prisma": "^5.8.1",
     "prisma-kysely": "^1.7.1",
